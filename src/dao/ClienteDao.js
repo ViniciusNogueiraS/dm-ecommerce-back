@@ -8,13 +8,13 @@ class ClienteDao {
   }
 
   getAllClientes(res){
-    executeSQL('SELECT u.idusuario, u.nome, u.email, u.telefone, c.cpf FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario', (clientes) => {
+    executeSQL('SELECT u.idusuario, u.nome, u.email, u.telefone, c.cpf, c.num_cartao, c.data_validade, c.codigo_seguranca FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario', (clientes) => {
       res.json(clientes);
     });
   }
 
   getClienteById(res, idusuario){
-    executeSQL('SELECT u.*, c.cpf FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario WHERE idusuario = '+idusuario+';', (clienteSemEnd) => {
+    executeSQL('SELECT u.*, c.cpf, c.num_cartao, c.data_validade, c.codigo_seguranca FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario WHERE idusuario = '+idusuario+';', (clienteSemEnd) => {
       var enderecoDao = new EnderecoDao();
       var endereco = new Endereco(enderecoDao.getEnderecoByCliente(idusuario));
 
@@ -25,6 +25,9 @@ class ClienteDao {
         senha: clienteSemEnd[0].senha,
         telefone: clienteSemEnd[0].telefone,
         cpf: clienteSemEnd[0].cpf,
+        num_cartao: clienteSemEnd[0].num_cartao,
+        data_validade: clienteSemEnd[0].data_validade,
+        codigo_seguranca: clienteSemEnd[0].codigo_seguranca,
         endereco
       });
 
@@ -39,9 +42,8 @@ class ClienteDao {
       }else {
         //inserindo novo usuario
         executeSQL('INSERT INTO ecommerce.usuario(nome, email, senha, telefone, data_cadastro) VALUES("'+cliente.nome+'", "'+cliente.email+'", "'+cliente.senha+'", "'+cliente.telefone+'", "'+dataNow()+'");', (newUsuario) => {
-          console.log(newUsuario);
           //inserindo novo cliente
-          executeSQL('INSERT INTO ecommerce.cliente(cpf, id_usuario) VALUES("'+cliente.cpf+'", '+newUsuario.insertId+');', (newCliente) => {
+          executeSQL('INSERT INTO ecommerce.cliente(cpf, num_cartao, data_validade, codigo_seguranca, id_usuario) VALUES("'+cliente.cpf+'", "'+cliente.num_cartao+'", "'+cliente.data_validade+'", "'+cliente.codigo_seguranca+'", '+newUsuario.insertId+');', (newCliente) => {
             //inserindo novo endereco
             var enderecoDao = new EnderecoDao();
             enderecoDao.persistEnderecoCliente(cliente.endereco, newUsuario.insertId);

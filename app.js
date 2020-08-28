@@ -14,7 +14,7 @@ const Endereco = require('./src/model/Endereco');
 const Cliente = require('./src/model/Cliente');
 const Produto = require('./src/model/Produto');
 const Pedido = require('./src/model/Pedido');
-const visitante = require('./src/model/visitante');
+const Visitante = require('./src/model/Visitante');
 
 //dao
 const LoginDao = require('./src/dao/LoginDao');
@@ -25,7 +25,6 @@ const CarrinhoDao = require('./src/dao/CarrinhoDao');
 const PedidoDao = require('./src/dao/PedidoDao');
 const VisitanteDao = require('./src/dao/VisitanteDao');
 const EnderecoDao = require('./src/dao/EnderecoDao');
-const Visitante = require('./src/model/visitante');
 
 // ============ Middleare de Autenticação =================
 
@@ -112,6 +111,9 @@ app.post('/cadastro', function (req, res) {
     req.body.senha != '' || req.body.senha != undefined ||
     req.body.telefone != '' || req.body.telefone != undefined ||
     req.body.cpf != '' || req.body.cpf != undefined ||
+    req.body.num_cartao != '' || req.body.num_cartao != undefined ||
+    req.body.data_validade != '' || req.body.data_validade != undefined ||
+    req.body.codigo_seguranca != '' || req.body.codigo_seguranca != undefined ||
     req.body.endereco.rua != '' || req.body.endereco.rua != undefined ||
     req.body.endereco.numero != '' || req.body.endereco.numero != undefined ||
     req.body.endereco.bairro != '' || req.body.endereco.bairro != undefined ||
@@ -204,9 +206,6 @@ app.delete('/produtoADM', function (req, res) {
   produtoDao.deleteProdutoById(res, req.query.idproduto);
 });
 
-
-
-
 //CARRINHO
 app.get('/carrinho', function (req, res) {
   let carrinhoDao = new CarrinhoDao();
@@ -260,10 +259,13 @@ app.post('/pedido', function (req, res) {
         id_cliente: req.body.id_cliente,
         id_endereco: req.body.id_endereco,
         forma_pagamento: req.body.forma_pagamento,
-        num_ct_credito: req.body.num_ct_credito,
-        agencia: req.body.agencia,
+        num_cartao: req.body.num_cartao,
+        data_validade: req.body.data_validade,
+        codigo_seguranca: req.body.codigo_seguranca,
         status: req.body.status
       });
+
+      pedidoDao.persistPedidoCliente(pedido);
 
     }else if (
     req.body.endereco.rua != '' || req.body.endereco.rua != undefined ||
@@ -281,6 +283,9 @@ app.post('/pedido', function (req, res) {
   req.body.senha != '' || req.body.senha != undefined ||
   req.body.telefone != '' || req.body.telefone != undefined ||
   req.body.cpf != '' || req.body.cpf != undefined ||
+  req.body.num_cartao != '' || req.body.num_cartao != undefined ||
+  req.body.data_validade != '' || req.body.data_validade != undefined ||
+  req.body.codigo_seguranca != '' || req.body.codigo_seguranca != undefined ||
   req.body.endereco.rua != '' || req.body.endereco.rua != undefined ||
   req.body.endereco.numero != '' || req.body.endereco.numero != undefined ||
   req.body.endereco.bairro != '' || req.body.endereco.bairro != undefined ||
@@ -302,8 +307,9 @@ app.post('/pedido', function (req, res) {
   let pedido = new Pedido({
     id_visitante: req.body.id_visitante,
     forma_pagamento: req.body.forma_pagamento,
-    num_ct_credito: req.body.num_ct_credito,
-    agencia: req.body.agencia,
+    num_cartao: req.body.num_cartao,
+    data_validade: req.body.data_validade,
+    codigo_seguranca: req.body.codigo_seguranca,
     status: req.body.status
   });
 

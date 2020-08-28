@@ -6,7 +6,7 @@ class Cliente {
   senha;
   telefone;
   cpf;
-  num_ct_credito;
+  num_cartao;
   data_validade;
   codigo_seguranca;
   endereco;

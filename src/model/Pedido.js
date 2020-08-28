@@ -2,13 +2,14 @@ class Pedido {
 
   idpedido;
   data_criacao;
-  id_visitante;
-  id_cliente;
-  id_endereco;
+  visitante;
+  cliente;
+  endereco;
   forma_pagamento;
-  num_ct_credito;
+  num_cartao;
   data_validade;
   codigo_seguranca;
+  lista_produtos;
   status;
 
   constructor(obj) {

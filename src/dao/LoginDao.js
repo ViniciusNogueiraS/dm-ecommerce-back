@@ -14,7 +14,7 @@ class LoginDao {
       if (verificaUsuario[0] != undefined) {//usuario existente
         executeSQL('SELECT id_usuario FROM ecommerce.cliente WHERE id_usuario = ' + verificaUsuario[0].idusuario + ';', (verificaCliente) => {
           if (verificaCliente[0] != undefined) {//cliente existente
-            executeSQL('SELECT u.*, c.cpf, e.* FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario INNER JOIN ecommerce.endereco e ON e.id_cliente = u.idusuario WHERE idusuario = ' + verificaCliente[0].id_usuario + ';', (loginCliente) => {
+            executeSQL('SELECT u.*, c.*, e.* FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario INNER JOIN ecommerce.endereco e ON e.id_cliente = u.idusuario WHERE idusuario = ' + verificaCliente[0].id_usuario + ';', (loginCliente) => {
               var endereco = new Endereco({
                 idendereco: loginCliente[0].idendereco,
                 rua: loginCliente[0].rua,
@@ -32,6 +32,9 @@ class LoginDao {
                 senha: loginCliente[0].senha,
                 telefone: loginCliente[0].telefone,
                 cpf: loginCliente[0].cpf,
+                num_cartao: loginCliente[0].num_cartao,
+                data_validade: loginCliente[0].data_validade,
+                codigo_seguranca: loginCliente[0].codigo_seguranca,
                 endereco
               });
 

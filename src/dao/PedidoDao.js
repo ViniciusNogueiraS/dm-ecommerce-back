@@ -15,7 +15,7 @@ class PedidoDao {
       res.json(pedido);
     });
   }
-/*
+  /*
   updatePedido(res, num_ct_credito, agencia){
     executeSQL('UPDATE FROM ecommerce.pedido SET num_ct_credito = "'+num_ct_credito+'", agencia = "'+agencia+'";', (upPedido) => {
       res.json(upPedido);
@@ -35,58 +35,50 @@ class PedidoDao {
   }*/
 
   //métodos de COMPRA
-  persistPedidoVisitante(res, cpf, num_ct_credito, agencia, lista_produtos){
+  persistPedidoVisitante(res, pedido){
 
-    function persistPedido_Lista(id_visitante, lista_produtos, data_criacao){
-      executeSQL('SELECT idpedido FROM ecommerce.pedido WHERE id_visitante = '+id_visitante+' AND data_criacao = '+data_criacao+';', (idpedido) => {
-        //VISITANTE poderá fazer o pedido com apenas um produto na lista
-        executeSQL('INSERT INTO ecommerce.pedido_lista(id_pedido, id_produto) VALUES('+idpedido[0]+', '+lista_produtos[0].idproduto+';', (newPedidoLista) => {
-          res.json("PEDIDO ENVIADO COM SUCESSO!");
-        });
-      });
-    }
-
-    var data_criacao = dataNow();
-
-    executeSQL('SELECT v.idvisitante, e.idendereco FROM ecommerce.visitante v INNER JOIN ecommerce.endereco e ON e.id_visitante = v.idvisitante WHERE v.cpf = "'+cpf+'";', (getIds) => {
-      if (num_ct_credito == '' || num_ct_credito == null) {
-        executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_visitante, id_endereco, status_pedido) VALUES("'+data_criacao+'", '+getIds[0]+', '+getIds[1]+', "CRIADO");', (newPedidoNoCt) => {
-          persistPedido_Lista(getIds[0], lista_produtos, data_criacao);
-        });
-      }else{
-        executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_visitante, id_endereco, num_ct_credito, agencia, status_pedido) VALUES("'+data_criacao+'", '+getIds[0]+', '+getIds[1]+', "'+num_ct_credito+'", "'+agencia+'", "CRIADO", );', (newPedidoWiCt) => {
-          persistPedido_Lista(getIds[0], lista_produtos, data_criacao);
-        });
-      }
-    });
-  }
-
-  persistPedidoCliente(res, cliente, num_ct_credito, agencia, lista_produtos){
-
-    function persistPedido_Lista(id_cliente, lista_produtos, data_criacao){
-      executeSQL('SELECT idpedido FROM ecommerce.pedido WHERE id_cliente = '+id_cliente+' AND data_criacao = '+data_criacao+';', (idpedido) => {
-        //CLIENTE poderá fazer o pedido com vários produtos na lista
-        for (var i = 0; i < lista_produtos.length; i++) {
-          executeSQL('INSERT INTO ecommerce.pedido_lista(id_pedido, id_produto) VALUES('+idpedido[0]+', '+lista_produtos[i].idproduto+';', (newPedidoLista) => {
-          });
-        }
+    function persistPedido_Lista(idNewPedido){
+      //VISITANTE poderá fazer o pedido com apenas um produto na lista
+      executeSQL('INSERT INTO ecommerce.pedido_lista(id_pedido, id_produto, quantidade) VALUES('+idNewPedido+', '+pedido.lista_produtos[0].idproduto+', '+pedido.lista_produtos[0].quantidade+';', (newPedidoLista) => {
         res.json("PEDIDO ENVIADO COM SUCESSO!");
       });
     }
 
     var data_criacao = dataNow();
 
-    executeSQL('SELECT idendereco FROM ecommerce.endereco WHERE id_cliente = '+cliente.idusuario+';', (id_endereco) => {
-      if (num_ct_credito == '' || num_ct_credito == null) {
-        executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_cliente, id_endereco, status_pedido) VALUES("'+data_criacao+'", '+cliente.idusuario+', '+id_endereco[0]+', "CRIADO");', (newPedidoNoCt) => {
-          persistPedido_Lista(cliente.idusuario, lista_produtos, data_criacao);
+    if (pedido.num_cartao == '' || pedido.num_cartao == null) {
+      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_visitante, id_endereco, status_pedido) VALUES("'+data_criacao+'", '+pedido.visitante.idvisitante+', '+pedido.endereco.idendereco+', "CRIADO");', (newPedidoBoleto) => {
+        persistPedido_Lista(newPedidoBoleto.insertId);
+      });
+    }else{
+      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_visitante, id_endereco, num_cartao, data_validade, codigo_seguranca, status_pedido) VALUES("'+data_criacao+'", '+pedido.visitante.idvisitante+', '+pedido.endereco.idendereco+', "'+pedido.num_cartao+'", "'+pedido.data_validade+'", "'+pedido.codigo_seguranca+'", "CRIADO", );', (newPedidoCartao) => {
+        persistPedido_Lista(newPedidoCartao.insertId);
+      });
+    }
+  }
+
+  persistPedidoCliente(res, pedido){
+
+    function persistPedido_Lista(idNewPedido){
+      //CLIENTE poderá fazer o pedido com vários produtos na lista
+      pedido.lista_produtos.forEach(item => {
+        executeSQL('INSERT INTO ecommerce.pedido_lista(id_pedido, id_produto) VALUES('+idNewPedido+', '+item.idproduto+';', (newPedidoLista) => {
         });
-      }else{
-        executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_cliente, id_endereco, num_ct_credito, agencia, status_pedido) VALUES("'+data_criacao+'", '+cliente.idusuario+', '+id_endereco[0]+', "'+num_ct_credito+'", "'+agencia+'", "CRIADO", );', (newPedidoWiCt) => {
-          persistPedido_Lista(cliente.idusuario, lista_produtos, data_criacao);
-        });
-      }
-    });
+      });
+      res.json("PEDIDO ENVIADO COM SUCESSO!");
+    }
+
+    var data_criacao = dataNow();
+
+    if (pedido.num_cartao == '' || pedido.num_cartao == null) {
+      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_cliente, id_endereco, status_pedido) VALUES("'+data_criacao+'", '+pedido.cliente.idusuario+', '+pedido.cliente.endereco.idendereco+', "CRIADO");', (newPedidoBoleto) => {
+        persistPedido_Lista(newPedidoBoleto.insertId);
+      });
+    }else{
+      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_cliente, id_endereco, num_cartao, agencia, status_pedido) VALUES("'+data_criacao+'", '+pedido.cliente.idusuario+', '+pedido.cliente.endereco.idendereco+', "'+pedido.num_cartao+'", "'+pedido.data_validade+'", "'+pedido.codigo_seguranca+'", "CRIADO", );', (newPedidoCartao) => {
+        persistPedido_Lista(newPedidoCartao.insertId);
+      });
+    }
   }
 
 }
