@@ -46,7 +46,11 @@ class ClienteDao {
             var enderecoDao = new EnderecoDao();
             enderecoDao.persistEnderecoCliente(cliente.endereco, newUsuario.insertId);
             
-            res.json({ auth: false, message: "USUÁRIO CADASTRADO COM SUCESSO!"});
+            if (enderecoDao.persistEnderecoCliente(cliente.endereco, newUsuario.insertId) == Number) {
+              res.json({ auth: false, message: "USUÁRIO CADASTRADO COM SUCESSO!"});
+            }else{
+              res.status(401).json({ auth: false, message: "FALHA AO CADASTRAR ENDEREÇO!"});
+            }
           });
         });
       }

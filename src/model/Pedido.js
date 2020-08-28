@@ -7,7 +7,8 @@ class Pedido {
   id_endereco;
   forma_pagamento;
   num_ct_credito;
-  agencia;
+  data_validade;
+  codigo_seguranca;
   status;
 
   constructor(obj) {

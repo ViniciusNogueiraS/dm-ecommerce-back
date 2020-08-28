@@ -17,13 +17,15 @@ class EnderecoDao {
 
   persistEnderecoCliente(endereco, idusuario){
     //inserindo endereco
-    executeSQL('INSERT INTO ecommerce.endereco(rua, numero, referencia, bairro, cidade, uf, id_cliente) VALUES("'+endereco.rua+'", "'+endereco.numero+'", "'+endereco.referencia+'", "'+endereco.bairro+'", "'+endereco.cidade+'", "'+endereco.uf+'", '+idusuario+');', (newEndereco) => {
+    return executeSQL('INSERT INTO ecommerce.endereco(rua, numero, referencia, bairro, cidade, uf, id_cliente) VALUES("'+endereco.rua+'", "'+endereco.numero+'", "'+endereco.referencia+'", "'+endereco.bairro+'", "'+endereco.cidade+'", "'+endereco.uf+'", '+idusuario+');', (newEndereco) => {
+      return newEndereco.insertId;
     });
   }
 
   persistEnderecoVisitante(endereco, idusuario){
     //inserindo endereco
-    executeSQL('INSERT INTO ecommerce.endereco(rua, numero, referencia, bairro, cidade, uf, id_visitante) VALUES("'+endereco.rua+'", "'+endereco.numero+'", "'+endereco.referencia+'", "'+endereco.bairro+'", "'+endereco.cidade+'", "'+endereco.uf+'", '+idusuario+');', (newEndereco) => {
+    return executeSQL('INSERT INTO ecommerce.endereco(rua, numero, referencia, bairro, cidade, uf, id_visitante) VALUES("'+endereco.rua+'", "'+endereco.numero+'", "'+endereco.referencia+'", "'+endereco.bairro+'", "'+endereco.cidade+'", "'+endereco.uf+'", '+idusuario+');', (newEndereco) => {
+      return newEndereco.insertId
     });
   }
 

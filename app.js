@@ -13,6 +13,8 @@ const port = process.env.PORT || 3000;
 const Endereco = require('./src/model/Endereco');
 const Cliente = require('./src/model/Cliente');
 const Produto = require('./src/model/Produto');
+const Pedido = require('./src/model/Pedido');
+const visitante = require('./src/model/visitante');
 
 //dao
 const LoginDao = require('./src/dao/LoginDao');
@@ -21,6 +23,9 @@ const ClienteDao = require('./src/dao/ClienteDao');
 const ProdutoDao = require('./src/dao/ProdutoDao');
 const CarrinhoDao = require('./src/dao/CarrinhoDao');
 const PedidoDao = require('./src/dao/PedidoDao');
+const VisitanteDao = require('./src/dao/VisitanteDao');
+const EnderecoDao = require('./src/dao/EnderecoDao');
+const Visitante = require('./src/model/visitante');
 
 // ============ Middleare de Autenticação =================
 
@@ -234,7 +239,7 @@ app.delete('/carrinho', function (req, res) {
 
 
 //CRUD PEDIDO
-/*
+
 app.get('/pedido', function (req, res) {
   let pedidoDao = new PedidoDao();
 
@@ -247,8 +252,81 @@ app.get('/pedido', function (req, res) {
 
 app.post('/pedido', function (req, res) {
   let pedidoDao = new PedidoDao();
-  
 
+  if (req.body.id_cliente) {// PEDIDO DE CLIENTE
+    if (req.body.enderecoCad) {
+
+      let pedido = new Pedido({
+        id_cliente: req.body.id_cliente,
+        id_endereco: req.body.id_endereco,
+        forma_pagamento: req.body.forma_pagamento,
+        num_ct_credito: req.body.num_ct_credito,
+        agencia: req.body.agencia,
+        status: req.body.status
+      });
+
+    }else if (
+    req.body.endereco.rua != '' || req.body.endereco.rua != undefined ||
+    req.body.endereco.numero != '' || req.body.endereco.numero != undefined ||
+    req.body.endereco.bairro != '' || req.body.endereco.bairro != undefined ||
+    req.body.endereco.cidade != '' || req.body.endereco.cidade != undefined ||
+    req.body.endereco.uf != '' || req.body.endereco.uf != undefined){
+
+      let endereco = new Endereco(req.body.endereco);
+    }
+    
+  }else if (// PEDIDO DE VISITANTE
+  req.body.nome != '' || req.body.nome != undefined ||
+  req.body.email != '' || req.body.email != undefined ||
+  req.body.senha != '' || req.body.senha != undefined ||
+  req.body.telefone != '' || req.body.telefone != undefined ||
+  req.body.cpf != '' || req.body.cpf != undefined ||
+  req.body.endereco.rua != '' || req.body.endereco.rua != undefined ||
+  req.body.endereco.numero != '' || req.body.endereco.numero != undefined ||
+  req.body.endereco.bairro != '' || req.body.endereco.bairro != undefined ||
+  req.body.endereco.cidade != '' || req.body.endereco.cidade != undefined ||
+  req.body.endereco.uf != '' || req.body.endereco.uf != undefined) {
+    
+    let enderecoDao = new EnderecoDao();
+
+    let visitanteDao = new VisitanteDao();
+    let visitante = new Visitante();
+
+    visitanteDao.persistVisitante(visitante);
+
+    let endereco = new Endereco(req.body.endereco);
+
+    enderecoDao.persistEnderecoVisitante(endereco, );
+    
+  }
+  let pedido = new Pedido({
+    id_visitante: req.body.id_visitante,
+    forma_pagamento: req.body.forma_pagamento,
+    num_ct_credito: req.body.num_ct_credito,
+    agencia: req.body.agencia,
+    status: req.body.status
+  });
+
+  if (req.query.cpf) {//é VISITANTE
+    let visitanteDao = new VisitanteDao();
+    //persitir visitante, persitir endereco, persistir pedido e persistir pedido_lista
+  
+    visitanteDao.persistVisitante(recurso.geraVisitanteJS(req));
+    persistPedidoVisitante(res, req.query.cpf, req.query.num_ct_credito, req.query.agencia, req.query.lista_produtos);
+  
+  } else if (req.query.cliente) {//é CLIENTE
+    //persistir pedido e persistir pedido_lista
+  
+    persistPedidoCliente(res, cliente, req.query.num_ct_credito, req.query.agencia, req.query.lista_produtos);
+  
+  } else {
+    res.json("ERRO AO CRIAR PEDIDO!");
+  }
+});
+
+
+  
+/*
   se for VISITANTE
   req.query.cpf
   req.query.nome
@@ -269,22 +347,5 @@ app.post('/pedido', function (req, res) {
   req.query.num_ct_credito
   req.query.agencia
   req.query.lista_produtos
-
-  
-  if (req.query.cpf) {//é VISITANTE
-    let visitanteDao = new VisitanteDao();
-    //persitir visitante, persitir endereco, persistir pedido e persistir pedido_lista
-
-    visitanteDao.persistVisitante(recurso.geraVisitanteJS(req));
-    persistPedidoVisitante(res, req.query.cpf, req.query.num_ct_credito, req.query.agencia, req.query.lista_produtos);
-
-  } else if (req.query.cliente) {//é CLIENTE
-    //persistir pedido e persistir pedido_lista
-
-    persistPedidoCliente(res, cliente, req.query.num_ct_credito, req.query.agencia, req.query.lista_produtos);
-
-  } else {
-    res.json("ERRO AO CRIAR PEDIDO!");
-  }
-});
 */
+  
