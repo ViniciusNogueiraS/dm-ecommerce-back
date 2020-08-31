@@ -106,19 +106,19 @@ app.post('/logout', function (req, res) {
 app.post('/cadastro', function (req, res) {
 
   if(
-    req.body.nome != '' || req.body.nome != undefined ||
-    req.body.email != '' || req.body.email != undefined ||
-    req.body.senha != '' || req.body.senha != undefined ||
-    req.body.telefone != '' || req.body.telefone != undefined ||
-    req.body.cpf != '' || req.body.cpf != undefined ||
-    req.body.num_cartao != '' || req.body.num_cartao != undefined ||
-    req.body.data_validade != '' || req.body.data_validade != undefined ||
-    req.body.codigo_seguranca != '' || req.body.codigo_seguranca != undefined ||
-    req.body.endereco.rua != '' || req.body.endereco.rua != undefined ||
-    req.body.endereco.numero != '' || req.body.endereco.numero != undefined ||
-    req.body.endereco.bairro != '' || req.body.endereco.bairro != undefined ||
-    req.body.endereco.cidade != '' || req.body.endereco.cidade != undefined ||
-    req.body.endereco.uf != '' || req.body.endereco.uf != undefined){
+    req.body.nome != '' && req.body.nome != undefined ||
+    req.body.email != '' && req.body.email != undefined ||
+    req.body.senha != '' && req.body.senha != undefined ||
+    req.body.telefone != '' && req.body.telefone != undefined ||
+    req.body.cpf != '' && req.body.cpf != undefined ||
+    req.body.num_cartao != '' && req.body.num_cartao != undefined ||
+    req.body.data_validade != '' && req.body.data_validade != undefined ||
+    req.body.codigo_seguranca != '' && req.body.codigo_seguranca != undefined ||
+    req.body.endereco.rua != '' && req.body.endereco.rua != undefined ||
+    req.body.endereco.numero != '' && req.body.endereco.numero != undefined ||
+    req.body.endereco.bairro != '' && req.body.endereco.bairro != undefined ||
+    req.body.endereco.cidade != '' && req.body.endereco.cidade != undefined ||
+    req.body.endereco.uf != '' && req.body.endereco.uf != undefined){
     
     let endereco = new Endereco(req.body.endereco);
     
@@ -256,102 +256,78 @@ app.post('/pedido', function (req, res) {
     if (req.body.enderecoCad) {
 
       let pedido = new Pedido({
-        id_cliente: req.body.id_cliente,
-        id_endereco: req.body.id_endereco,
+        id_cliente: req.body.cliente.idusuario,
+        id_endereco: req.body.endereco.idendereco,
         forma_pagamento: req.body.forma_pagamento,
-        num_cartao: req.body.num_cartao,
-        data_validade: req.body.data_validade,
-        codigo_seguranca: req.body.codigo_seguranca,
+        num_cartao: req.body.cliente.num_cartao,
+        data_validade: req.body.cliente.data_validade,
+        codigo_seguranca: req.body.cliente.codigo_seguranca,
         status: req.body.status
       });
 
-      pedidoDao.persistPedidoCliente(pedido);
+      pedidoDao.persistPedidoCliente(res, pedido);
 
     }else if (
-    req.body.endereco.rua != '' || req.body.endereco.rua != undefined ||
-    req.body.endereco.numero != '' || req.body.endereco.numero != undefined ||
-    req.body.endereco.bairro != '' || req.body.endereco.bairro != undefined ||
-    req.body.endereco.cidade != '' || req.body.endereco.cidade != undefined ||
-    req.body.endereco.uf != '' || req.body.endereco.uf != undefined){
+    req.body.endereco.rua != '' && req.body.endereco.rua != undefined ||
+    req.body.endereco.numero != '' && req.body.endereco.numero != undefined ||
+    req.body.endereco.bairro != '' && req.body.endereco.bairro != undefined ||
+    req.body.endereco.cidade != '' && req.body.endereco.cidade != undefined ||
+    req.body.endereco.uf != '' && req.body.endereco.uf != undefined){
 
+      let enderecoDao = new EnderecoDao();
       let endereco = new Endereco(req.body.endereco);
+
+      enderecoDao.persistEnderecoCliente(endereco, req.body.cliente.idusuario);
+
+      let pedido = new Pedido({
+        id_cliente: req.body.cliente.idusuario,
+        id_endereco: endereco.idendereco,
+        forma_pagamento: req.body.forma_pagamento,
+        num_cartao: req.body.cliente.num_cartao,
+        data_validade: req.body.cliente.data_validade,
+        codigo_seguranca: req.body.cliente.codigo_seguranca,
+        status: req.body.status
+      });
+
+      pedidoDao.persistPedidoCliente(res, pedido);
     }
     
   }else if (// PEDIDO DE VISITANTE
-  req.body.nome != '' || req.body.nome != undefined ||
-  req.body.email != '' || req.body.email != undefined ||
-  req.body.senha != '' || req.body.senha != undefined ||
-  req.body.telefone != '' || req.body.telefone != undefined ||
-  req.body.cpf != '' || req.body.cpf != undefined ||
-  req.body.num_cartao != '' || req.body.num_cartao != undefined ||
-  req.body.data_validade != '' || req.body.data_validade != undefined ||
-  req.body.codigo_seguranca != '' || req.body.codigo_seguranca != undefined ||
-  req.body.endereco.rua != '' || req.body.endereco.rua != undefined ||
-  req.body.endereco.numero != '' || req.body.endereco.numero != undefined ||
-  req.body.endereco.bairro != '' || req.body.endereco.bairro != undefined ||
-  req.body.endereco.cidade != '' || req.body.endereco.cidade != undefined ||
-  req.body.endereco.uf != '' || req.body.endereco.uf != undefined) {
+  req.body.nome != '' && req.body.nome != undefined ||
+  req.body.email != '' && req.body.email != undefined ||
+  req.body.telefone != '' && req.body.telefone != undefined ||
+  req.body.cpf != '' && req.body.cpf != undefined ||
+  req.body.num_cartao != '' && req.body.num_cartao != undefined ||
+  req.body.data_validade != '' && req.body.data_validade != undefined ||
+  req.body.codigo_seguranca != '' && req.body.codigo_seguranca != undefined ||
+  req.body.endereco.rua != '' && req.body.endereco.rua != undefined ||
+  req.body.endereco.numero != '' && req.body.endereco.numero != undefined ||
+  req.body.endereco.bairro != '' && req.body.endereco.bairro != undefined ||
+  req.body.endereco.cidade != '' && req.body.endereco.cidade != undefined ||
+  req.body.endereco.uf != '' && req.body.endereco.uf != undefined) {
     
-    let enderecoDao = new EnderecoDao();
-
-    let visitanteDao = new VisitanteDao();
-    let visitante = new Visitante();
-
-    visitanteDao.persistVisitante(visitante);
-
     let endereco = new Endereco(req.body.endereco);
-
-    enderecoDao.persistEnderecoVisitante(endereco, );
-    
-  }
-  let pedido = new Pedido({
-    id_visitante: req.body.id_visitante,
-    forma_pagamento: req.body.forma_pagamento,
-    num_cartao: req.body.num_cartao,
-    data_validade: req.body.data_validade,
-    codigo_seguranca: req.body.codigo_seguranca,
-    status: req.body.status
-  });
-
-  if (req.query.cpf) {//é VISITANTE
+  
     let visitanteDao = new VisitanteDao();
-    //persitir visitante, persitir endereco, persistir pedido e persistir pedido_lista
-  
-    visitanteDao.persistVisitante(recurso.geraVisitanteJS(req));
-    persistPedidoVisitante(res, req.query.cpf, req.query.num_ct_credito, req.query.agencia, req.query.lista_produtos);
-  
-  } else if (req.query.cliente) {//é CLIENTE
-    //persistir pedido e persistir pedido_lista
-  
-    persistPedidoCliente(res, cliente, req.query.num_ct_credito, req.query.agencia, req.query.lista_produtos);
-  
-  } else {
-    res.json("ERRO AO CRIAR PEDIDO!");
+    let visitante = new Visitante({
+      nome: req.body.nome,
+      email: req.body.email,
+      telefone: req.body.telefone,
+      cpf: req.body.cpf,
+      endereco
+    });
+    
+    var idNewVisitante = visitanteDao.persistVisitante(visitante);
+    
+    let pedido = new Pedido({
+      id_visitante: idNewVisitante,
+      forma_pagamento: req.body.forma_pagamento,
+      num_cartao: req.body.num_cartao,
+      data_validade: req.body.data_validade,
+      codigo_seguranca: req.body.codigo_seguranca,
+      status: req.body.status
+    });
+
+    pedidoDao.persistPedidoVisitante(res, pedido);
   }
 });
-
-
-  
-/*
-  se for VISITANTE
-  req.query.cpf
-  req.query.nome
-  req.query.email
-  req.query.telefone
-  req.query.num_ct_credito
-  req.query.agencia
-  req.query.rua
-  req.query.numero
-  req.query.referencia
-  req.query.bairro
-  req.query.cidade
-  req.query.uf
-  req.query.lista_produtos
- 
-  se for CLIENTE
-  req.query.cliente
-  req.query.num_ct_credito
-  req.query.agencia
-  req.query.lista_produtos
-*/
-  
