@@ -256,8 +256,8 @@ app.post('/pedido', function (req, res) {
     if (req.body.enderecoCad) {
 
       let pedido = new Pedido({
-        id_cliente: req.body.cliente.idusuario,
-        id_endereco: req.body.endereco.idendereco,
+        cliente: req.body.cliente,
+        endereco: req.body.endereco,
         forma_pagamento: req.body.forma_pagamento,
         num_cartao: req.body.cliente.num_cartao,
         data_validade: req.body.cliente.data_validade,
@@ -280,8 +280,8 @@ app.post('/pedido', function (req, res) {
       enderecoDao.persistEnderecoCliente(endereco, req.body.cliente.idusuario);
 
       let pedido = new Pedido({
-        id_cliente: req.body.cliente.idusuario,
-        id_endereco: endereco.idendereco,
+        cliente: req.body.cliente,
+        endereco,
         forma_pagamento: req.body.forma_pagamento,
         num_cartao: req.body.cliente.num_cartao,
         data_validade: req.body.cliente.data_validade,
@@ -306,28 +306,36 @@ app.post('/pedido', function (req, res) {
   req.body.endereco.cidade != '' && req.body.endereco.cidade != undefined ||
   req.body.endereco.uf != '' && req.body.endereco.uf != undefined) {
     
-    let endereco = new Endereco(req.body.endereco);
-  
+    
     let visitanteDao = new VisitanteDao();
     let visitante = new Visitante({
       nome: req.body.nome,
       email: req.body.email,
       telefone: req.body.telefone,
-      cpf: req.body.cpf,
-      endereco
+      cpf: req.body.cpf
     });
     
     var idNewVisitante = visitanteDao.persistVisitante(visitante);
     
-    let pedido = new Pedido({
-      id_visitante: idNewVisitante,
-      forma_pagamento: req.body.forma_pagamento,
-      num_cartao: req.body.num_cartao,
-      data_validade: req.body.data_validade,
-      codigo_seguranca: req.body.codigo_seguranca,
-      status: req.body.status
-    });
+    let enderecoDao = new EnderecoDao();
+    let endereco = new Endereco(req.body.endereco);
+    
+    var idNewEndereco = enderecoDao.persistEnderecoVisitante(endereco, idNewVisitante);
 
-    pedidoDao.persistPedidoVisitante(res, pedido);
+    if (idNewVisitante && idNewEndereco) {
+      let pedido = new Pedido({
+        visitante,
+        endereco,
+        forma_pagamento: req.body.forma_pagamento,
+        num_cartao: req.body.num_cartao,
+        data_validade: req.body.data_validade,
+        codigo_seguranca: req.body.codigo_seguranca,
+        status: req.body.status
+      });
+  
+      pedidoDao.persistPedidoVisitante(res, pedido);
+    }else{
+      res.status(401).json({ auth: false, message: 'ERRO AO REALIZAR PEDIDO!' });
+    }
   }
 });

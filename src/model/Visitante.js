@@ -5,7 +5,6 @@ class Visitante {
   email;
   telefone;
   cpf;
-  endereco;
 
   constructor(obj) {
     Object.assign(this, obj);
