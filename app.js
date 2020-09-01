@@ -23,8 +23,12 @@ const ClienteDao = require('./src/dao/ClienteDao');
 const ProdutoDao = require('./src/dao/ProdutoDao');
 const CarrinhoDao = require('./src/dao/CarrinhoDao');
 const PedidoDao = require('./src/dao/PedidoDao');
-const VisitanteDao = require('./src/dao/VisitanteDao');
 const EnderecoDao = require('./src/dao/EnderecoDao');
+
+//helpers
+const verificaCliente = require('./src/helpers/verifyCliente');
+const verificaVisitante = require('./src/helpers/verifyVisitante');
+const verificaEndereco = require('./src/helpers/verifyEndereco');
 
 // ============ Middleare de Autenticação =================
 
@@ -105,30 +109,20 @@ app.post('/logout', function (req, res) {
 
 app.post('/cadastro', function (req, res) {
 
-  if(
-    req.body.nome != '' && req.body.nome != undefined ||
-    req.body.email != '' && req.body.email != undefined ||
-    req.body.senha != '' && req.body.senha != undefined ||
-    req.body.telefone != '' && req.body.telefone != undefined ||
-    req.body.cpf != '' && req.body.cpf != undefined ||
-    req.body.num_cartao != '' && req.body.num_cartao != undefined ||
-    req.body.data_validade != '' && req.body.data_validade != undefined ||
-    req.body.codigo_seguranca != '' && req.body.codigo_seguranca != undefined ||
-    req.body.endereco.rua != '' && req.body.endereco.rua != undefined ||
-    req.body.endereco.numero != '' && req.body.endereco.numero != undefined ||
-    req.body.endereco.bairro != '' && req.body.endereco.bairro != undefined ||
-    req.body.endereco.cidade != '' && req.body.endereco.cidade != undefined ||
-    req.body.endereco.uf != '' && req.body.endereco.uf != undefined){
+  if(verificaCliente(req.body.cliente)){
     
-    let endereco = new Endereco(req.body.endereco);
+    let endereco = new Endereco(req.body.cliente.endereco);
     
     let clienteDao = new ClienteDao();
     let cliente = new Cliente({
-      nome: req.body.nome,
-      email: req.body.email,
-      senha: req.body.senha,
-      telefone: req.body.telefone,
-      cpf: req.body.cpf,
+      nome: req.body.cliente.nome,
+      email: req.body.cliente.email,
+      senha: req.body.cliente.senha,
+      telefone: req.body.cliente.telefone,
+      cpf: req.body.cliente.cpf,
+      num_cartao: req.body.cliente.num_cartao,
+      data_validade: req.body.cliente.data_validade,
+      codigo_seguranca: req.body.cliente.codigo_seguranca,
       endereco
     });
 
@@ -252,89 +246,74 @@ app.get('/pedido', function (req, res) {
 app.post('/pedido', function (req, res) {
   let pedidoDao = new PedidoDao();
 
-  if (req.body.id_cliente) {// PEDIDO DE CLIENTE
-    if (req.body.enderecoCad) {
-
-      let pedido = new Pedido({
-        cliente: req.body.cliente,
-        endereco: req.body.endereco,
-        forma_pagamento: req.body.forma_pagamento,
-        num_cartao: req.body.cliente.num_cartao,
-        data_validade: req.body.cliente.data_validade,
-        codigo_seguranca: req.body.cliente.codigo_seguranca,
-        status: req.body.status
-      });
-
-      pedidoDao.persistPedidoCliente(res, pedido);
-
-    }else if (
-    req.body.endereco.rua != '' && req.body.endereco.rua != undefined ||
-    req.body.endereco.numero != '' && req.body.endereco.numero != undefined ||
-    req.body.endereco.bairro != '' && req.body.endereco.bairro != undefined ||
-    req.body.endereco.cidade != '' && req.body.endereco.cidade != undefined ||
-    req.body.endereco.uf != '' && req.body.endereco.uf != undefined){
-
-      let enderecoDao = new EnderecoDao();
-      let endereco = new Endereco(req.body.endereco);
-
-      enderecoDao.persistEnderecoCliente(endereco, req.body.cliente.idusuario);
-
-      let pedido = new Pedido({
-        cliente: req.body.cliente,
-        endereco,
-        forma_pagamento: req.body.forma_pagamento,
-        num_cartao: req.body.cliente.num_cartao,
-        data_validade: req.body.cliente.data_validade,
-        codigo_seguranca: req.body.cliente.codigo_seguranca,
-        status: req.body.status
-      });
-
-      pedidoDao.persistPedidoCliente(res, pedido);
-    }
-    
-  }else if (// PEDIDO DE VISITANTE
-  req.body.nome != '' && req.body.nome != undefined ||
-  req.body.email != '' && req.body.email != undefined ||
-  req.body.telefone != '' && req.body.telefone != undefined ||
-  req.body.cpf != '' && req.body.cpf != undefined ||
-  req.body.num_cartao != '' && req.body.num_cartao != undefined ||
-  req.body.data_validade != '' && req.body.data_validade != undefined ||
-  req.body.codigo_seguranca != '' && req.body.codigo_seguranca != undefined ||
-  req.body.endereco.rua != '' && req.body.endereco.rua != undefined ||
-  req.body.endereco.numero != '' && req.body.endereco.numero != undefined ||
-  req.body.endereco.bairro != '' && req.body.endereco.bairro != undefined ||
-  req.body.endereco.cidade != '' && req.body.endereco.cidade != undefined ||
-  req.body.endereco.uf != '' && req.body.endereco.uf != undefined) {
-    
-    
-    let visitanteDao = new VisitanteDao();
-    let visitante = new Visitante({
-      nome: req.body.nome,
-      email: req.body.email,
-      telefone: req.body.telefone,
-      cpf: req.body.cpf
+  if (req.body.pedidoClienteEndCad) {// PEDIDO DE CLIENTE ENDERECO CADASTRADO!
+    let pedido = new Pedido({
+      cliente: req.body.pedidoClienteEndCad.cliente,
+      endereco: req.body.pedidoClienteEndCad.endereco,
+      forma_pagamento: req.body.pedidoClienteEndCad.forma_pagamento,
+      num_cartao: req.body.pedidoClienteEndCad.cliente.num_cartao,
+      data_validade: req.body.pedidoClienteEndCad.cliente.data_validade,
+      codigo_seguranca: req.body.pedidoClienteEndCad.cliente.codigo_seguranca,
+      status: req.body.pedidoClienteEndCad.status
     });
-    
-    var idNewVisitante = visitanteDao.persistVisitante(visitante);
-    
-    let enderecoDao = new EnderecoDao();
-    let endereco = new Endereco(req.body.endereco);
-    
-    var idNewEndereco = enderecoDao.persistEnderecoVisitante(endereco, idNewVisitante);
 
-    if (idNewVisitante && idNewEndereco) {
-      let pedido = new Pedido({
-        visitante,
-        endereco,
-        forma_pagamento: req.body.forma_pagamento,
-        num_cartao: req.body.num_cartao,
-        data_validade: req.body.data_validade,
-        codigo_seguranca: req.body.codigo_seguranca,
-        status: req.body.status
-      });
+    pedidoDao.persistPedidoCliente(res, pedido);
+
+    }else if (req.body.pedidoClienteEndNovo) {// PEDIDO DE CLIENTE ENDERECO NOVO!
+      if (verificaEndereco(req.body.pedidoClienteEndNovo.endereco)){
   
-      pedidoDao.persistPedidoVisitante(res, pedido);
-    }else{
+        let enderecoDao = new EnderecoDao();
+        let endereco = new Endereco(req.body.pedidoClienteEndNovo.endereco);
+  
+        if (enderecoDao.persistEndereco(endereco) == false) {
+          res.status(401).json({ auth: false, message: 'ERRO AO REALIZAR PEDIDO!' });
+        }
+  
+        let pedido = new Pedido({
+          cliente: req.body.pedidoClienteEndNovo.cliente,
+          endereco,
+          forma_pagamento: req.body.pedidoClienteEndNovo.forma_pagamento,
+          num_cartao: req.body.pedidoClienteEndNovo.cliente.num_cartao,
+          data_validade: req.body.pedidoClienteEndNovo.cliente.data_validade,
+          codigo_seguranca: req.body.pedidoClienteEndNovo.cliente.codigo_seguranca,
+          status: req.body.pedidoClienteEndNovo.status
+        });
+  
+        pedidoDao.persistPedidoCliente(res, pedido);
+      }else{
+        res.status(401).json({ auth: false, message: 'ERRO AO REALIZAR PEDIDO!' });
+      }
+    }else if (req.body.pedidoVisitante) {// PEDIDO DE VISITANTE
+      if (verificaVisitante(req.body.pedidoVisitante.visitante) && verificaEndereco(req.body.pedidoVisitante.endereco)) {
+        let visitanteDao = new VisitanteDao();
+        let visitante = new Visitante({
+          nome: req.body.pedidoVisitante.visitante.nome,
+          email: req.body.pedidoVisitante.visitante.email,
+          telefone: req.body.pedidoVisitante.visitante.telefone,
+          cpf: req.body.pedidoVisitante.visitante.cpf
+        });
+        
+        var idNewVisitante = visitanteDao.persistVisitante(visitante);
+        
+        let enderecoDao = new EnderecoDao();
+        let endereco = new Endereco(req.body.pedidoVisitante.endereco);
+        
+        var idNewEndereco = enderecoDao.persistEndereco(endereco);
+    
+        if (idNewVisitante && idNewEndereco) {
+          let pedido = new Pedido({
+            visitante,
+            endereco,
+            forma_pagamento: req.body.pedidoVisitante.forma_pagamento,
+            num_cartao: req.body.pedidoVisitante.num_cartao,
+            data_validade: req.body.pedidoVisitante.data_validade,
+            codigo_seguranca: req.body.pedidoVisitante.codigo_seguranca,
+            status: req.body.pedidoVisitante.status
+          });
+      
+          pedidoDao.persistPedidoVisitante(res, pedido);
+        }
+      }else{
       res.status(401).json({ auth: false, message: 'ERRO AO REALIZAR PEDIDO!' });
     }
   }

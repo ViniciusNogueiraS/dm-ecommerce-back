@@ -5,27 +5,60 @@ class EnderecoDao {
   }
 
   getAllEnderecos(){
-    executeSQL('SELECT rua, numero, referencia, bairro, cidade, uf FROM ecommerce.endereco;', (enderecos) => {
+    return new Promise((act) => {
+      try {
+        executeSQL('SELECT rua, numero, referencia, bairro, cidade, uf FROM ecommerce.endereco;', (enderecos) => {
+          act(enderecos);
+        });
+      }
+      catch(err) {
+        console.log(err);
+        act(false);
+      }
     });
   }
 
   getEnderecoByCliente(idusuario){
-    return executeSQL('SELECT rua, numero, referencia, bairro, cidade, uf FROM ecommerce.endereco WHERE id_cliente = '+idusuario+';', (endereco) => {
-      return endereco[0];
+    return new Promise((act) => {
+      try {
+        executeSQL('SELECT rua, numero, referencia, bairro, cidade, uf FROM ecommerce.endereco WHERE id_cliente = '+idusuario+';', (endereco) => {
+          act(endereco[0]);
+        });
+      }
+      catch(err) {
+        console.log(err);
+        act(false);
+      }
+    });
+  }
+
+  persistEndereco(endereco){
+    return new Promise((act) => {
+      try {
+        //inserindo endereco
+        executeSQL('INSERT INTO ecommerce.endereco(rua, numero, referencia, bairro, cidade, uf) VALUES("'+endereco.rua+'", "'+endereco.numero+'", "'+endereco.referencia+'", "'+endereco.bairro+'", "'+endereco.cidade+'", "'+endereco.uf+'");', (newEndereco) => {
+          act(newEndereco.insertId);
+        });
+      }
+      catch(err) {
+        console.log(err);
+        act(false);
+      }
     });
   }
 
   persistEnderecoCliente(endereco, idusuario){
-    //inserindo endereco
-    return executeSQL('INSERT INTO ecommerce.endereco(rua, numero, referencia, bairro, cidade, uf, id_cliente) VALUES("'+endereco.rua+'", "'+endereco.numero+'", "'+endereco.referencia+'", "'+endereco.bairro+'", "'+endereco.cidade+'", "'+endereco.uf+'", '+idusuario+');', (newEndereco) => {
-      return newEndereco.insertId;
-    });
-  }
-
-  persistEnderecoVisitante(endereco, idusuario){
-    //inserindo endereco
-    return executeSQL('INSERT INTO ecommerce.endereco(rua, numero, referencia, bairro, cidade, uf, id_visitante) VALUES("'+endereco.rua+'", "'+endereco.numero+'", "'+endereco.referencia+'", "'+endereco.bairro+'", "'+endereco.cidade+'", "'+endereco.uf+'", '+idusuario+');', (newEndereco) => {
-      return newEndereco.insertId
+    return new Promise((act) => {
+      try {
+        //inserindo endereco de cliente
+        executeSQL('INSERT INTO ecommerce.endereco(rua, numero, referencia, bairro, cidade, uf, id_cliente) VALUES("'+endereco.rua+'", "'+endereco.numero+'", "'+endereco.referencia+'", "'+endereco.bairro+'", "'+endereco.cidade+'", "'+endereco.uf+'", '+idusuario+');', (newEndereco) => {
+          act(newEndereco.insertId);
+        });
+      }
+      catch(err) {
+        console.log(err);
+        act(err);
+      }
     });
   }
 

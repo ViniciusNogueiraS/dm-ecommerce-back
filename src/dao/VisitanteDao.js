@@ -4,14 +4,23 @@ class VisitanteDao {
   }
 
   persistVisitante(visitante){
-    return executeSQL('SELECT idvisitante FROM ecommerce.visitante WHERE nome = "'+visitante.nome+'" AND email = "'+visitante.email+'", AND telefone = "'+visitante.telefone+'" AND cpf = "'+visitante.cpf+'";', (getId) => {
-      if (getId[0] == undefined) {// se não existir um cadastro identico para este visitante!
-        return executeSQL('INSERT INTO ecommerce.visitante(nome, email, telefone, cpf) VALUES("'+visitante.nome+'", "'+visitante.email+'", "'+visitante.telefone+'", "'+visitante.cpf+'");', (newVisitante) => {
-          console.log("VISITANTE CADASTRADO COM SUCESSO!");
-          return newVisitante.insertId;
+    return new Promise((act) => {
+      try {
+        executeSQL('SELECT idvisitante FROM ecommerce.visitante WHERE nome = "'+visitante.nome+'" AND email = "'+visitante.email+'", AND telefone = "'+visitante.telefone+'" AND cpf = "'+visitante.cpf+'";', (getId) => {
+          console.log(getId[0]);
+          if (getId[0] == undefined) {// se não existir um cadastro identico para este visitante!
+            executeSQL('INSERT INTO ecommerce.visitante(nome, email, telefone, cpf) VALUES("'+visitante.nome+'", "'+visitante.email+'", "'+visitante.telefone+'", "'+visitante.cpf+'");', (newVisitante) => {
+              console.log("VISITANTE CADASTRADO COM SUCESSO!");
+              act(newVisitante.insertId);
+            });
+          }else{
+            false;
+          }
         });
-      }else{
-        return false;
+      }
+      catch(err) {
+        console.log(err);
+        res.status(401).json({ auth: false, message: "FALHA AO CADASTRAR VISITANTE! => "+err.message});
       }
     });
   }
