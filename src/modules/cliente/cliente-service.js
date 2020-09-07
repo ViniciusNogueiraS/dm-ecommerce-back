@@ -8,7 +8,7 @@ const verificaCliente = require('../../helpers/verifyCliente');
 
 //---------------importações-------------------
 
-function controlador(app){
+function aplicarServicos(app){
 
   app.get('/cliente', function (req, res) {
     let clienteDao = new ClienteDao();
@@ -51,4 +51,4 @@ function controlador(app){
     }
   });
 }
-module.exports = controlador;
+module.exports = aplicarServicos;

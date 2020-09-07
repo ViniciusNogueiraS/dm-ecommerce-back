@@ -2,7 +2,7 @@ const CarrinhoDao = require('./carrinho-dao');
 
 //---------------importações-------------------
 
-function controlador(app){
+function aplicarServicos(app){
 
   app.get('/carrinho', function (req, res) {
     let carrinhoDao = new CarrinhoDao();
@@ -32,4 +32,4 @@ function controlador(app){
     carrinhoDao.remDoCarrinho(res, req.query.id_cliente, req.query.id_produto);
   });
 }
-module.exports = controlador;
+module.exports = aplicarServicos;

@@ -4,7 +4,7 @@ const ProdutoDao = require('./produto-dao');
 
 //---------------importações-------------------
 
-function controlador(app){
+function aplicarServicos(app){
 
   app.get('/busca', function (req, res) {
     let produtoDao = new ProdutoDao();
@@ -66,4 +66,4 @@ function controlador(app){
     produtoDao.deleteProdutoById(res, req.query.idproduto);
   });
 }
-module.exports = controlador;
+module.exports = aplicarServicos;

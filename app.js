@@ -9,10 +9,10 @@ const db = require('./src/DbConnection');
 const multer = require('multer');
 const port = process.env.PORT || 3000;
 
-var cliente_controller = require('./src/modules/cliente/cliente-router');
-var produto_controller = require('./src/modules/produto/produto-router');
-var carrinho_controller = require('./src/modules/carrinho/carrinho-router');
-var pedido_controller = require('./src/modules/pedido/pedido-router');
+var cliente_services = require('./src/modules/cliente/cliente-service');
+var produto_services = require('./src/modules/produto/produto-service');
+var carrinho_services = require('./src/modules/carrinho/carrinho-service');
+var pedido_services = require('./src/modules/pedido/pedido-service');
 
 // ============ Middleare de Autenticação =================
 
@@ -77,8 +77,9 @@ app.get('/', function (req, res) {
   res.send("Servindo em localhost:3000... ◙ Aplicação BackEnd");
 });
 
-//Rotas
-cliente_controller(app);
-produto_controller(app);
-carrinho_controller(app);
-pedido_controller(app);
+// Serviços
+
+cliente_services(app);
+produto_services(app);
+carrinho_services(app);
+pedido_services(app);

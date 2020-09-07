@@ -11,7 +11,7 @@ const verificaEndereco = require('../../helpers/verifyEndereco');
 
 //---------------importações-------------------
 
-function controlador(app){
+function aplicarServicos(app){
 
   app.get('/pedido', function (req, res) {
     let pedidoDao = new PedidoDao();
@@ -116,4 +116,4 @@ function controlador(app){
   });
 
 }
-module.exports = controlador;
+module.exports = aplicarServicos;
