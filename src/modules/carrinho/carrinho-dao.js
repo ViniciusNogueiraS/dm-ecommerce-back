@@ -1,5 +1,6 @@
-const executeSQL = require('../helpers/exeSQL');
-const dataNow = require('../helpers/dataTool');
+const executeSQL = require('../../helpers/exeSQL');
+const dataNow = require('../../helpers/dataTool');
+
 class CarrinhoDao {
   constructor() {
   }
@@ -12,7 +13,7 @@ class CarrinhoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR CARRINHO! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR CARRINHO! => "+err});
     }
   }
 
@@ -28,7 +29,7 @@ class CarrinhoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO CONFIRMAR PRODUTO NO CARRINHO! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO CONFIRMAR PRODUTO NO CARRINHO! => "+err});
     }
   }
 
@@ -40,7 +41,7 @@ class CarrinhoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO INSERIR PRODUTO NO CARRINHO! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO INSERIR PRODUTO NO CARRINHO! => "+err});
     }
   }
 
@@ -52,7 +53,7 @@ class CarrinhoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO EXCLUIR PRODUTO DO CARRINHO! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO EXCLUIR PRODUTO DO CARRINHO! => "+err});
     }
   }
 }

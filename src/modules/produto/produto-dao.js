@@ -1,5 +1,6 @@
 const executeSQL = require('../helpers/exeSQL');
 const dataNow = require('../helpers/dataTool');
+
 class ProdutoDao {
   constructor() {
   }
@@ -12,7 +13,7 @@ class ProdutoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PRODUTOS! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PRODUTOS! => "+err});
     }
   }
 
@@ -24,7 +25,7 @@ class ProdutoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PRODUTO! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PRODUTO! => "+err});
     }
   }
 
@@ -36,7 +37,7 @@ class ProdutoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO BUSCAR POR PRODUTOS! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO BUSCAR POR PRODUTOS! => "+err});
     }
   }
 
@@ -48,7 +49,7 @@ class ProdutoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PRODUTOS POR CATEGORIA! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PRODUTOS POR CATEGORIA! => "+err});
     }
   }
 
@@ -60,7 +61,7 @@ class ProdutoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO CADASTRAR PRODUTO! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO CADASTRAR PRODUTO! => "+err});
     }
   }
 
@@ -72,7 +73,7 @@ class ProdutoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO ALTERAR PRODUTO! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO ALTERAR PRODUTO! => "+err});
     }
   }
 
@@ -84,7 +85,7 @@ class ProdutoDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO EXCLUIR PRODUTO! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO EXCLUIR PRODUTO! => "+err});
     }
   }
 }

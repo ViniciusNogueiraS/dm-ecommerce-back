@@ -1,7 +1,8 @@
-const executeSQL = require('../helpers/exeSQL');
-const dataNow = require('../helpers/dataTool');
-const Endereco = require('../model/Endereco');
-const EnderecoDao = require('./EnderecoDao');
+const Endereco = require('../endereco/endereco-model');
+const EnderecoDao = require('../endereco/endereco-dao');
+
+const executeSQL = require('../../helpers/exeSQL');
+const dataNow = require('../../helpers/dataTool');
 
 class ClienteDao {
   constructor() {
@@ -15,7 +16,7 @@ class ClienteDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR CLIENTES! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR CLIENTES! => "+err});
     }
   }
 
@@ -69,7 +70,7 @@ class ClienteDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO CADASTRAR CLIENTE! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO CADASTRAR CLIENTE! => "+err});
     }
   }
 

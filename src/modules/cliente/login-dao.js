@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 const secret = "hash";
 const executeSQL = require('../helpers/exeSQL');
-const Cliente = require('../model/Cliente');
+const Cliente = require('../modules/cliente/cliente-model');
 const Endereco = require('../model/Endereco');
-//const dataNow = require('../helpers/dataTool');
 
 class LoginDao {
   constructor() {
@@ -56,7 +55,7 @@ class LoginDao {
     }
     catch(err) {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO REALIZAR LOGIN! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO REALIZAR LOGIN! => "+err});
     }
   }
 
