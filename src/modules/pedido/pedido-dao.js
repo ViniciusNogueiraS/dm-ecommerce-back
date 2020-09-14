@@ -11,7 +11,7 @@ class PedidoDao {
     })
     .catch(err => {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PEDIDOS! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PEDIDOS! => "+err});
     });
   }
 
@@ -21,15 +21,19 @@ class PedidoDao {
     })
     .catch(err => {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PEDIDO! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PEDIDO! => "+err});
     });
   }
-  /*
-  updatePedido(res, num_ct_credito, agencia){
-    executeSQL('UPDATE FROM ecommerce.pedido SET num_ct_credito = "'+num_ct_credito+'", agencia = "'+agencia+'";', (upPedido) => {
-      res.json(upPedido);
+
+  getPedidoById(res, idpedido){
+    executeSQL('SELECT * FROM ecommerce.pedido WHERE idpedido = '+idpedido+';', (pedido) => {
+      res.json(pedido);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PEDIDO! => "+err});
     });
-  }*/
+  }
 
   updateStatus(res, status_pedido){
     executeSQL('UPDATE FROM ecommerce.pedido SET status_pedido = "'+status_pedido+'";', (upStatus) => {
@@ -37,7 +41,7 @@ class PedidoDao {
     })
     .catch(err => {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO ALTERAR STATUS! => "+err.message});
+      res.status(401).json({ auth: false, message: "FALHA AO ALTERAR STATUS! => "+err});
     });
   }
   /*
@@ -56,27 +60,27 @@ class PedidoDao {
       })
       .catch(err => {
         console.log(err);
-        res.status(401).json({ auth: false, message: "FALHA AO VINCULAR PRODUTO AO PEDIDO DE VISITANTE! => "+err.message});
+        res.status(401).json({ auth: false, message: "FALHA AO VINCULAR PRODUTO AO PEDIDO DE VISITANTE! => "+err});
       });
     }
 
     var data_criacao = dataNow();
 
     if (pedido.forma_pagamento == 'boleto') {
-      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_visitante, id_endereco, forma_pagamento, status) VALUES("'+data_criacao+'", '+pedido.visitante.idvisitante+', '+pedido.endereco.idendereco+', "'+pedido.forma_pagamento+'", "CRIADO");', (newPedidoBoleto) => {
+      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_visitante, id_endereco, forma_pagamento, status, valor_total) VALUES("'+data_criacao+'", '+pedido.visitante.idvisitante+', '+pedido.endereco.idendereco+', "'+pedido.forma_pagamento+'", "CRIADO", '+pedido.calculaTotal()+');', (newPedidoBoleto) => {
         persistPedido_Lista(newPedidoBoleto.insertId);
       })
       .catch(err => {
         console.log(err);
-        res.status(401).json({ auth: false, message: "FALHA AO ENVIAR PEDIDO DE VISITANTE (BOLETO)! => "+err.message});
+        res.status(401).json({ auth: false, message: "FALHA AO ENVIAR PEDIDO DE VISITANTE (BOLETO)! => "+err});
       });
     }else{
-      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_visitante, id_endereco, forma_pagamento, num_cartao, data_validade, codigo_seguranca, status) VALUES("'+data_criacao+'", '+pedido.visitante.idvisitante+', '+pedido.endereco.idendereco+', "'+pedido.forma_pagamento+'", "'+pedido.num_cartao+'", "'+pedido.data_validade+'", "'+pedido.codigo_seguranca+'", "CRIADO");', (newPedidoCartao) => {
+      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_visitante, id_endereco, forma_pagamento, num_cartao, data_validade, codigo_seguranca, status, valor_total) VALUES("'+data_criacao+'", '+pedido.visitante.idvisitante+', '+pedido.endereco.idendereco+', "'+pedido.forma_pagamento+'", "'+pedido.num_cartao+'", "'+pedido.data_validade+'", "'+pedido.codigo_seguranca+'", "CRIADO", '+pedido.calculaTotal()+');', (newPedidoCartao) => {
         persistPedido_Lista(newPedidoCartao.insertId);
       })
       .catch(err => {
         console.log(err);
-        res.status(401).json({ auth: false, message: "FALHA AO ENVIAR PEDIDO DE VISITANTE (CARTÃO)! => "+err.message});
+        res.status(401).json({ auth: false, message: "FALHA AO ENVIAR PEDIDO DE VISITANTE (CARTÃO)! => "+err});
       });
     }
   }
@@ -89,7 +93,7 @@ class PedidoDao {
         })
         .catch(err => {
           console.log(err);
-          res.status(401).json({ auth: false, message: "FALHA AO VINCULAR PRODUTOS AO PEDIDO DE CLIENTE! => "+err.message});
+          res.status(401).json({ auth: false, message: "FALHA AO VINCULAR PRODUTOS AO PEDIDO DE CLIENTE! => "+err});
         });
       });
       res.json("PEDIDO ENVIADO COM SUCESSO!");
@@ -98,20 +102,20 @@ class PedidoDao {
     var data_criacao = dataNow();
 
     if (pedido.forma_pagamento == 'boleto') {
-      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_cliente, id_endereco, forma_pagamento, status) VALUES("'+data_criacao+'", '+pedido.cliente.idusuario+', '+pedido.cliente.endereco.idendereco+', "'+pedido.forma_pagamento+'", "CRIADO");', (newPedidoBoleto) => {
+      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_cliente, id_endereco, forma_pagamento, status, valor_total) VALUES("'+data_criacao+'", '+pedido.cliente.idusuario+', '+pedido.cliente.endereco.idendereco+', "'+pedido.forma_pagamento+'", "CRIADO", '+pedido.calculaTotal()+');', (newPedidoBoleto) => {
         persistPedido_Lista(newPedidoBoleto.insertId);
       })
       .catch(err => {
         console.log(err);
-        res.status(401).json({ auth: false, message: "FALHA AO ENVIAR PEDIDO DE CLIENTE (CARTÃO)! => "+err.message});
+        res.status(401).json({ auth: false, message: "FALHA AO ENVIAR PEDIDO DE CLIENTE (CARTÃO)! => "+err});
       });
     }else{
-      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_cliente, id_endereco, forma_pagamento, num_cartao, data_validade, codigo_seguranca, status) VALUES("'+data_criacao+'", '+pedido.cliente.idusuario+', '+pedido.cliente.endereco.idendereco+', "'+pedido.forma_pagamento+'", "'+pedido.num_cartao+'", "'+pedido.data_validade+'", "'+pedido.codigo_seguranca+'", "CRIADO");', (newPedidoCartao) => {
+      executeSQL('INSERT INTO ecommerce.pedido(data_criacao, id_cliente, id_endereco, forma_pagamento, num_cartao, data_validade, codigo_seguranca, status, valor_total) VALUES("'+data_criacao+'", '+pedido.cliente.idusuario+', '+pedido.cliente.endereco.idendereco+', "'+pedido.forma_pagamento+'", "'+pedido.num_cartao+'", "'+pedido.data_validade+'", "'+pedido.codigo_seguranca+'", "CRIADO", '+pedido.calculaTotal()+');', (newPedidoCartao) => {
         persistPedido_Lista(newPedidoCartao.insertId);
       })
       .catch(err => {
         console.log(err);
-        res.status(401).json({ auth: false, message: "FALHA AO ENVIAR PEDIDO DE CLIENTE (CARTÃO)! => "+err.message});
+        res.status(401).json({ auth: false, message: "FALHA AO ENVIAR PEDIDO DE CLIENTE (CARTÃO)! => "+err});
       });
     }
   }

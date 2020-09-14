@@ -1,3 +1,5 @@
+const Produto = require("../produto/produto-model");
+
 class Pedido {
 
   idpedido;
@@ -11,9 +13,18 @@ class Pedido {
   codigo_seguranca;
   lista_produtos;
   status;
+  valor_total;
 
   constructor(obj) {
     Object.assign(this, obj);
+  }
+
+  calculaTotal(){
+    var aux = [];
+    this.lista_produtos.forEach(item => {
+      aux.push(parseFloat(item.produto.preco) * parseInt(item.quantidade));
+    });
+    return sum(aux);
   }
 
 }
