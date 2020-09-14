@@ -1,8 +1,10 @@
 const jwt = require('jsonwebtoken');
 const secret = "hash";
-const executeSQL = require('../helpers/exeSQL');
-const Cliente = require('../modules/cliente/cliente-model');
-const Endereco = require('../model/Endereco');
+
+const Cliente = require('./cliente-model');
+const Endereco = require('../endereco/endereco-model');
+
+const executeSQL = require('../../helpers/exeSQL');
 
 class LoginDao {
   constructor() {

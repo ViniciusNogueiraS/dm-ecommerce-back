@@ -1,4 +1,4 @@
-const executeSQL = require('../helpers/exeSQL');
+const executeSQL = require('../../helpers/exeSQL');
 
 class VisitanteDao {
   constructor() {
