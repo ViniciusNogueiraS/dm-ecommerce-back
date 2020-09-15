@@ -11,7 +11,7 @@ class Pedido {
   num_cartao;
   data_validade;
   codigo_seguranca;
-  lista_produtos;
+  items;
   status;
   valor_total;
 
@@ -21,7 +21,7 @@ class Pedido {
 
   calculaTotal(){
     var aux = [];
-    this.lista_produtos.forEach(item => {
+    this.items.forEach(item => {
       aux.push(parseFloat(item.produto.preco) * parseInt(item.quantidade));
     });
     return sum(aux);

@@ -18,9 +18,15 @@ function aplicarServicos(app){
   
     if (req.query.id_cliente) {
       pedidoDao.getPedidoByCliente(res, req.query.id_cliente);
-    } else {
-      pedidoDao.getAllPedidos(res);
+    }else if (req.query.idpedido) {
+      pedidoDao.getPedidoById(res, req.query.idpedido);
     }
+  });
+
+  app.get('/pedidoADM', function (req, res) {
+    let pedidoDao = new PedidoDao();
+  
+    pedidoDao.getAllPedidos(res);
   });
   
   app.post('/pedido', function (req, res) {
