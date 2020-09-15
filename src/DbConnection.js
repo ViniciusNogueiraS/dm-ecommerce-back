@@ -1,6 +1,7 @@
 class Db {
-  mysql = '';
-  con = '';
+
+  mysql;
+  con;
 
   constructor() {
     Object.assign(this);
@@ -9,11 +10,11 @@ class Db {
   getConnection(){
     var mysql = require('mysql');
     var con = mysql.createConnection({
-      host     : "localhost",
-      user     : "root",
-      password : "123",
-      database : "ecommerce",
-      port     : "3306"
+      host: "localhost",
+      user: "root",
+      password: "123",
+      database: "ecommerce",
+      port: "3306"
     });
 
     con.connect(function(err) {

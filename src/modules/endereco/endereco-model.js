@@ -11,5 +11,9 @@ class Endereco {
   constructor(obj) {
     Object.assign(this, obj);
   }
+
+  setIdEndereco(idendereco){
+    this.idendereco = idendereco;
+  }
 }
 module.exports = Endereco;

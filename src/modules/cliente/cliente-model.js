@@ -6,6 +6,9 @@ class Cliente {
   senha;
   telefone;
   cpf;
+  num_cartao;
+  data_validade;
+  codigo_seguranca;
   endereco;
 
   constructor(obj) {
