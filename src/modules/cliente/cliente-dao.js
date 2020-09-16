@@ -9,7 +9,7 @@ class ClienteDao {
   }
 
   getAllClientes(res){
-    executeSQL('SELECT u.idusuario, u.nome, u.email, u.telefone, c.cpf, c.num_cartao, c.data_validade, c.codigo_seguranca FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario', (clientes) => {
+    executeSQL('SELECT u.idusuario, u.nome, u.email, u.telefone, c.cpf, c.num_cartao, c.data_validade, c.codigo_seguranca FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario;').then(clientes => {
       res.json(clientes);
     })
     .catch(err => {
@@ -19,7 +19,7 @@ class ClienteDao {
   }
 
   getClienteById(res, idusuario){
-    executeSQL('SELECT u.*, c.cpf, c.num_cartao, c.data_validade, c.codigo_seguranca FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario WHERE idusuario = '+idusuario+';', (clienteSemEnd) => {
+    executeSQL('SELECT u.*, c.cpf, c.num_cartao, c.data_validade, c.codigo_seguranca FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario WHERE idusuario = '+idusuario+';').then(clienteSemEnd => {
       var enderecoDao = new EnderecoDao();
       var endereco = new Endereco(enderecoDao.getEnderecoByCliente(idusuario));
 
@@ -45,14 +45,14 @@ class ClienteDao {
   }
 
   persistCliente(res, cliente){
-    executeSQL('SELECT idusuario FROM ecommerce.usuario WHERE email = "'+cliente.email+'";', (verificaCliente) => {
+    executeSQL('SELECT idusuario FROM ecommerce.usuario WHERE email = "'+cliente.email+'";').then(verificaCliente => {
       if (verificaCliente[0] != undefined) {
         res.status(401).json({ auth: false, message: "ESTE EMAIL JÁ ESTÁ SENDO UTILIZADO POR OUTRO USUÁRIO!"});
       }else {
         //inserindo novo usuario
-        executeSQL('INSERT INTO ecommerce.usuario(nome, email, senha, telefone, data_cadastro) VALUES("'+cliente.nome+'", "'+cliente.email+'", "'+cliente.senha+'", "'+cliente.telefone+'", "'+dataNow()+'");', (newUsuario) => {
+        executeSQL('INSERT INTO ecommerce.usuario(nome, email, senha, telefone, data_cadastro) VALUES("'+cliente.nome+'", "'+cliente.email+'", "'+cliente.senha+'", "'+cliente.telefone+'", "'+dataNow()+'");').then(newUsuario => {
           //inserindo novo cliente
-          executeSQL('INSERT INTO ecommerce.cliente(cpf, num_cartao, data_validade, codigo_seguranca, id_usuario) VALUES("'+cliente.cpf+'", "'+cliente.num_cartao+'", "'+cliente.data_validade+'", "'+cliente.codigo_seguranca+'", '+newUsuario.insertId+');', (newCliente) => {
+          executeSQL('INSERT INTO ecommerce.cliente(cpf, num_cartao, data_validade, codigo_seguranca, id_usuario) VALUES("'+cliente.cpf+'", "'+cliente.num_cartao+'", "'+cliente.data_validade+'", "'+cliente.codigo_seguranca+'", '+newUsuario.insertId+');').then(newCliente => {
             //inserindo novo endereco
             var enderecoDao = new EnderecoDao();
 

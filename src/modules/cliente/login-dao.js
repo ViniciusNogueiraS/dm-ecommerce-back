@@ -12,11 +12,11 @@ class LoginDao {
 
   login(res, email, senha) {
     try {
-      executeSQL('SELECT idusuario FROM ecommerce.usuario WHERE email = "' + email + '" AND senha = "' + senha + '";', (verificaUsuario) => {
+      executeSQL('SELECT idusuario FROM ecommerce.usuario WHERE email = "' + email + '" AND senha = "' + senha + '";').then(verificaUsuario => {
         if (verificaUsuario[0] != undefined) {//usuario existente
-          executeSQL('SELECT id_usuario FROM ecommerce.cliente WHERE id_usuario = ' + verificaUsuario[0].idusuario + ';', (verificaCliente) => {
+          executeSQL('SELECT id_usuario FROM ecommerce.cliente WHERE id_usuario = ' + verificaUsuario[0].idusuario + ';').then(verificaCliente => {
             if (verificaCliente[0] != undefined) {//cliente existente
-              executeSQL('SELECT u.*, c.*, e.* FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario INNER JOIN ecommerce.endereco e ON e.id_cliente = u.idusuario WHERE idusuario = ' + verificaCliente[0].id_usuario + ';', (loginCliente) => {
+              executeSQL('SELECT u.*, c.*, e.* FROM ecommerce.usuario u INNER JOIN ecommerce.cliente c ON c.id_usuario = u.idusuario INNER JOIN ecommerce.endereco e ON e.id_cliente = u.idusuario WHERE idusuario = ' + verificaCliente[0].id_usuario + ';').then(loginCliente => {
                 var endereco = new Endereco({
                   idendereco: loginCliente[0].idendereco,
                   rua: loginCliente[0].rua,
@@ -44,7 +44,7 @@ class LoginDao {
                 return res.json({ auth: true, cliente, token });//cliente logado!
               });
             }else {//administrador existente
-              executeSQL('SELECT u.*, a.cargo FROM ecommerce.usuario u INNER JOIN ecommerce.administrador a ON a.id_usuario = u.idusuario;', (loginAdministrador) => {
+              executeSQL('SELECT u.*, a.cargo FROM ecommerce.usuario u INNER JOIN ecommerce.administrador a ON a.id_usuario = u.idusuario;').then(loginAdministrador => {
                 var token = jwt.sign({ administrador: loginAdministrador[0] }, secret, { expiresIn: 6000 });
                 res.json({ auth: true, administrador: loginAdministrador[0], token });//administrador logado!
               });

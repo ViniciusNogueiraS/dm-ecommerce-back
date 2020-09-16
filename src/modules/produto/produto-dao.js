@@ -6,8 +6,7 @@ class ProdutoDao {
   }
 
   getAllProdutos(res){
-    executeSQL('SELECT * FROM ecommerce.produto;', (produtos) => {
-      console.log(produtos);
+    executeSQL('SELECT * FROM ecommerce.produto;').then(produtos => {
       res.json(produtos);
     })
     .catch(err => {
@@ -27,7 +26,7 @@ class ProdutoDao {
   }
 
   searchProdutos(res, pesquisa){
-    executeSQL('SELECT * FROM ecommerce.produto WHERE nome LIKE "%'+pesquisa+'%";', (produtos) => {
+    executeSQL('SELECT * FROM ecommerce.produto WHERE nome LIKE "%'+pesquisa+'%";').then(produtos => {
       res.json(produtos);
     })
     .catch(err => {
@@ -37,7 +36,7 @@ class ProdutoDao {
   }
 
   getProdutosByCategoria(res, categoria){
-    executeSQL('SELECT * FROM ecommerce.produto WHERE categoria = "'+categoria+'";', (produtos) => {
+    executeSQL('SELECT * FROM ecommerce.produto WHERE categoria = "'+categoria+'";').then(produtos => {
       res.json(produtos);
     })
     .catch(err => {
@@ -47,7 +46,7 @@ class ProdutoDao {
   }
 
   persistProduto(res, produto){
-    executeSQL('INSERT INTO ecommerce.produto(nome, categoria, preco, desconto, preco_descontado, descricao, imagem, data_cadastro) VALUES("'+produto.nome+'", "'+produto.categoria+'", '+produto.preco+', '+produto.desconto+', '+produto.preco_descontado+', "'+produto.descricao+'", "'+produto.imagem+'", "'+dataNow()+'");', (newProduto) => {
+    executeSQL('INSERT INTO ecommerce.produto(nome, categoria, preco, desconto, preco_descontado, descricao, imagem, data_cadastro) VALUES("'+produto.nome+'", "'+produto.categoria+'", '+produto.preco+', '+produto.desconto+', '+produto.preco_descontado+', "'+produto.descricao+'", "'+produto.imagem+'", "'+dataNow()+'");').then(newProduto => {
       res.json('PRODUTO CADASTRADO COM SUCESSO!');
     })
     .catch(err => {
@@ -57,7 +56,7 @@ class ProdutoDao {
   }
 
   uploadProdutoById(res, produto){
-    executeSQL('UPDATE ecommerce.produto SET nome = "'+produto.nome+'", categoria = "'+produto.categoria+'", preco = '+produto.preco+', desconto = '+produto.desconto+', preco_descontado = '+produto.preco_descontado+', descricao = "'+produto.descricao+'", imagem = "'+produto.imagem+'" WHERE idproduto = '+produto.idproduto+';', (upProduto) => {
+    executeSQL('UPDATE ecommerce.produto SET nome = "'+produto.nome+'", categoria = "'+produto.categoria+'", preco = '+produto.preco+', desconto = '+produto.desconto+', preco_descontado = '+produto.preco_descontado+', descricao = "'+produto.descricao+'", imagem = "'+produto.imagem+'" WHERE idproduto = '+produto.idproduto+';').then(upProduto => {
       res.json('PRODUTO ATUALIZADO COM SUCESSO!');
     })
     .catch(err => {
@@ -67,7 +66,7 @@ class ProdutoDao {
   }
 
   deleteProdutoById(res, idproduto){
-    executeSQL('DELETE FROM ecommerce.produto WHERE idproduto = '+idproduto+';', (delProduto) => {
+    executeSQL('DELETE FROM ecommerce.produto WHERE idproduto = '+idproduto+';').then(delProduto => {
       res.json('PRODUTO EXCLUÍDO COM SUCESSO!');
     })
     .catch(err => {
