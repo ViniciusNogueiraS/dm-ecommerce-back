@@ -1,5 +1,3 @@
-const Produto = require("../produto/produto-model");
-
 class Pedido {
 
   idpedido;
@@ -24,7 +22,7 @@ class Pedido {
     this.items.forEach(item => {
       aux.push(parseFloat(item.produto.preco) * parseInt(item.quantidade));
     });
-    return sum(aux);
+    return aux.reduce((a, b) => a + b, 0);
   }
 
 }
