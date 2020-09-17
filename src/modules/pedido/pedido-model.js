@@ -17,10 +17,15 @@ class Pedido {
     Object.assign(this, obj);
   }
 
+  setItems(items){
+    this.items = items;
+  }
+
   calculaTotal(){
     var aux = [];
     this.items.forEach(item => {
-      aux.push(parseFloat(item.produto.preco) * parseInt(item.quantidade));
+      var precoDescontado = item.produto.preco - (item.produto.preco * (item.produto.desconto / 100));
+      aux.push(parseFloat(precoDescontado) * parseInt(item.quantidade));
     });
     return aux.reduce((a, b) => a + b, 0);
   }

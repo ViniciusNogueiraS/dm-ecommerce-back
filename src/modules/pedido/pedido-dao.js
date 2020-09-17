@@ -1,23 +1,30 @@
 const executeSQL = require('../../helpers/exeSQL');
 const dataNow = require('../../helpers/dataTool');
 
+const Pedido = require('./pedido-model');
+const Produto = require('../produto/produto-model');
+const Visitante = require('./visitante-model');
+const Cliente = require('../cliente/cliente-model');
+const Endereco = require('../endereco/endereco-model');
+const Item = require('./item-model');
+
 class PedidoDao {
   constructor() {
   }
 
   getAllPedidos(res){
-    executeSQL('SELECT * FROM ecommerce.pedido;').then(pedidos => {
+    executeSQL('SELECT idpedido, data_criacao, forma_pagamento, status, valor_total FROM ecommerce.pedido;').then(pedidos => {
       res.json(pedidos);
     })
     .catch(err => {
       console.log(err);
-      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PEDIDOS! => "+err});
+      res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PEDIDO! => "+err});
     });
   }
 
   getPedidoByCliente(res, id_cliente){
-    executeSQL('SELECT * FROM ecommerce.pedido WHERE id_cliente = '+id_cliente+';').then(pedido => {
-      res.json(pedido);
+    executeSQL('SELECT idpedido, data_criacao, forma_pagamento, status, valor_total FROM ecommerce.pedido WHERE id_cliente = '+id_cliente+';').then(pedidos => {
+      res.json(pedidos);
     })
     .catch(err => {
       console.log(err);
@@ -26,12 +33,114 @@ class PedidoDao {
   }
 
   getPedidoById(res, idpedido){
-    executeSQL('SELECT * FROM ecommerce.pedido WHERE idpedido = '+idpedido+';').then(pedido => {
-      res.json(pedido);
+    executeSQL('SELECT p.*, v.*, u.*, c.*, e.* FROM ecommerce.pedido p LEFT JOIN ecommerce.visitante v ON idvisitante = id_visitante RIGHT JOIN ecommerce.usuario u ON idusuario = id_cliente RIGHT JOIN ecommerce.cliente c ON id_usuario = id_cliente INNER JOIN ecommerce.endereco e ON idendereco = id_endereco WHERE idpedido = '+idpedido+';').then(pedido => {
+      
+      var endereco = new Endereco({//ENDEREÇO DO PEDIDO!!!
+        idendereco: pedido[0].id_endereco,
+        rua: pedido[0].rua,
+        numero: pedido[0].numero,
+        referencia: pedido[0].referencia,
+        bairro: pedido[0].bairro,
+        cidade: pedido[0].cidade,
+        uf: pedido[0].uf
+      });
+
+      if (pedido[0].id_visitante != null) {//pedido de visitante
+        var cliente = null;
+        var visitante = new Visitante({
+          idvisitante: pedido[0].id_visitante,
+          nome: pedido[0].nome,
+          email: pedido[0].email,
+          telefone: pedido[0].telefone,
+          cpf: pedido[0].cpf
+        });
+
+      }else{//pedido de cliente
+        var visitante = null;
+        var cliente = new Cliente({
+          idusuario: pedido[0].idusuario,
+          nome: pedido[0].nome,
+          email: pedido[0].email,
+          telefone: pedido[0].telefone,
+          cpf: pedido[0].cpf,
+        });
+      }
+
+      if (pedido[0].forma_pagamento == 'boleto') {
+        var pedidoMontagem = new Pedido({
+          idpedido: pedido[0].idpedido,
+          data_criacao: pedido[0].data_criacao,
+          visitante,
+          cliente,
+          endereco,
+          forma_pagamento: pedido[0].forma_pagamento,
+          num_cartao: null,
+          data_validade: null,
+          codigo_seguranca: null,
+          items: null,
+          status: pedido[0].status,
+          valor_total: pedido[0].valor_total
+        });
+      }else{
+        var pedidoMontagem = new Pedido({
+          idpedido: pedido[0].idpedido,
+          data_criacao: pedido[0].data_criacao,
+          visitante,
+          cliente,
+          endereco,
+          forma_pagamento: pedido[0].forma_pagamento,
+          num_cartao: pedido[0].num_cartao,
+          data_validade: pedido[0].data_validade,
+          codigo_seguranca: pedido[0].codigo_seguranca,
+          items: null,
+          status: pedido[0].status,
+          valor_total: pedido[0].valor_total
+        });
+      }
+
+      this.getPedidoLista(pedidoMontagem.idpedido).then(items => {
+        if (items) {
+          pedidoMontagem.setItems(items);
+        }else{
+          res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PEDIDO! => "+err});
+        }
+        res.json(pedidoMontagem);
+      });
     })
     .catch(err => {
       console.log(err);
       res.status(401).json({ auth: false, message: "FALHA AO PROJETAR PEDIDO! => "+err});
+    });
+  }
+
+  getPedidoLista(id_pedido){
+    return new Promise((resolve, reject) => {
+      executeSQL('SELECT p.*, pl.quantidade FROM ecommerce.pedido_lista pl INNER JOIN ecommerce.produto p ON p.idproduto = pl.id_produto WHERE pl.id_pedido = '+id_pedido+';').then(pedido_lista => {
+        var items = [];
+        pedido_lista.forEach(pl => {
+          var item = new Item({
+            produto: new Produto({
+              idproduto: pl.idproduto,
+              nome: pl.nome,
+              categoria: pl.categoria,
+              preco: pl.preco,
+              desconto: pl.desconto,
+              descricao: pl.descricao,
+              imagem: pl.imagem,
+              data_cadastro: pl.data_cadastro,
+            }),
+            quantidade: pl.quantidade
+          });
+
+          items.push(item);
+        });
+        
+        resolve(items);
+      })
+      .catch(err => {
+        console.log(err);
+        reject(false);
+      });
     });
   }
 
