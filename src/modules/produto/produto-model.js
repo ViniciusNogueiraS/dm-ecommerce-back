@@ -5,6 +5,7 @@ class Produto {
   categoria;
   preco;
   desconto;
+  preco_descontado;
   descricao;
   imagem;
   data_cadastro;

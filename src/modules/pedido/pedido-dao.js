@@ -33,8 +33,7 @@ class PedidoDao {
   }
 
   getPedidoById(res, idpedido){
-    executeSQL('SELECT p.*, v.*, u.*, c.*, e.* FROM ecommerce.pedido p LEFT JOIN ecommerce.visitante v ON idvisitante = id_visitante RIGHT JOIN ecommerce.usuario u ON idusuario = id_cliente RIGHT JOIN ecommerce.cliente c ON id_usuario = id_cliente INNER JOIN ecommerce.endereco e ON idendereco = id_endereco WHERE idpedido = '+idpedido+';').then(pedido => {
-      
+    executeSQL('SELECT p.*, v.idvisitante as v_id, v.nome as v_nome, v.email as v_email, v.telefone as v_tel, v.cpf as v_cpf, u.*, c.*, e.* FROM ecommerce.pedido p LEFT JOIN ecommerce.visitante v ON idvisitante = id_visitante LEFT JOIN ecommerce.usuario u ON idusuario = id_cliente LEFT JOIN ecommerce.cliente c ON id_usuario = id_cliente INNER JOIN ecommerce.endereco e ON idendereco = id_endereco WHERE idpedido = '+idpedido+';').then(pedido => {
       var endereco = new Endereco({//ENDEREÇO DO PEDIDO!!!
         idendereco: pedido[0].id_endereco,
         rua: pedido[0].rua,
@@ -44,15 +43,16 @@ class PedidoDao {
         cidade: pedido[0].cidade,
         uf: pedido[0].uf
       });
-
+      
       if (pedido[0].id_visitante != null) {//pedido de visitante
+        console.log(pedido[0]);
         var cliente = null;
         var visitante = new Visitante({
-          idvisitante: pedido[0].id_visitante,
-          nome: pedido[0].nome,
-          email: pedido[0].email,
-          telefone: pedido[0].telefone,
-          cpf: pedido[0].cpf
+          idvisitante: pedido[0].v_id,
+          nome: pedido[0].v_nome,
+          email: pedido[0].v_email,
+          telefone: pedido[0].v_tel,
+          cpf: pedido[0].v_cpf
         });
 
       }else{//pedido de cliente
@@ -125,6 +125,7 @@ class PedidoDao {
               categoria: pl.categoria,
               preco: pl.preco,
               desconto: pl.desconto,
+              preco_descontado: pl.preco_descontado,
               descricao: pl.descricao,
               imagem: pl.imagem,
               data_cadastro: pl.data_cadastro,
@@ -144,9 +145,9 @@ class PedidoDao {
     });
   }
 
-  updateStatus(res, status_pedido){
-    executeSQL('UPDATE FROM ecommerce.pedido SET status_pedido = "'+status_pedido+'";').then(upStatus => {
-      res.json(upStatus);
+  updateStatus(res, idpedido, status){
+    executeSQL('UPDATE FROM ecommerce.pedido SET status = "'+status+'" WHERE idpedido = '+idpedido+';').then(upStatus => {
+      res.json("STATUS DE PEDIDO ALTERADO COM SUCESSO!");
     })
     .catch(err => {
       console.log(err);
@@ -165,7 +166,7 @@ class PedidoDao {
     function persistPedido_Lista(idNewPedido){
       //VISITANTE poderá fazer o pedido com apenas um produto na lista
       executeSQL('INSERT INTO ecommerce.pedido_lista(id_pedido, id_produto, quantidade) VALUES('+idNewPedido+', '+pedido.items[0].produto.idproduto+', '+pedido.items[0].quantidade+');').then(newPedidoLista => {
-        res.json("PEDIDO ENVIADO COM SUCESSO!");
+        res.json(idNewPedido);
       })
       .catch(err => {
         console.log(err);
@@ -205,7 +206,7 @@ class PedidoDao {
           res.status(401).json({ auth: false, message: "FALHA AO VINCULAR PRODUTOS AO PEDIDO DE CLIENTE! => "+err});
         });
       });
-      res.json("PEDIDO ENVIADO COM SUCESSO!");
+      res.json(idNewPedido);
     }
 
     var data_criacao = dataNow();

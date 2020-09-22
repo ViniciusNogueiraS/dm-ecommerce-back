@@ -16,17 +16,23 @@ function aplicarServicos(app){
   app.get('/pedido', function (req, res) {
     let pedidoDao = new PedidoDao();
   
-    if (req.query.id_cliente) {
-      pedidoDao.getPedidoByCliente(res, req.query.id_cliente);
-    }else if (req.query.idpedido) {
+    if (req.query.idpedido) {
       pedidoDao.getPedidoById(res, req.query.idpedido);
+    }else{
+      res.json();
     }
   });
 
   app.get('/pedidoADM', function (req, res) {
     let pedidoDao = new PedidoDao();
-  
-    pedidoDao.getAllPedidos(res);
+
+    if (req.query.id_cliente) {
+      pedidoDao.getPedidoByCliente(res, req.query.id_cliente);
+    }else if (req.query.status) {
+      pedidoDao.updateStatus(res, req.quey.idpedido, req.quey.status);
+    }else {
+      pedidoDao.getAllPedidos(res);
+    }
   });
   
   app.post('/pedido', function (req, res) {
